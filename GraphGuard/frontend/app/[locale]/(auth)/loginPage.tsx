@@ -2,33 +2,28 @@
 import { useState } from 'react'
 import {
   Box, Typography, TextField, Button, Stack, Alert,
-  Tabs, Tab, CircularProgress, alpha,
+  CircularProgress, alpha,
 } from '@mui/material'
 import SchoolIcon from '@mui/icons-material/School'
 import { useAppDispatch, useAppSelector } from '../store/hooks'
-import { loginUser, registerUser, clearError } from '../store/authSlice'
+import { loginUser, clearError } from '../store/authSlice'
 
 export default function LoginPage() {
   const dispatch = useAppDispatch()
   const { loading, error } = useAppSelector(s => s.auth)
 
-  const [tab, setTab] = useState(0)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [confirm, setConfirm] = useState('')
   const [localError, setLocalError] = useState('')
 
   const handleSubmit = async () => {
     setLocalError('')
     dispatch(clearError())
-    if (!username.trim() || !password) { setLocalError('Bitte alle Felder ausfüllen.'); return }
-    if (tab === 1 && password !== confirm) { setLocalError('Passwörter stimmen nicht überein.'); return }
-
-    if (tab === 0) {
-      dispatch(loginUser({ username: username.trim(), password }))
-    } else {
-      dispatch(registerUser({ username: username.trim(), password }))
+    if (!username.trim() || !password) {
+      setLocalError('Bitte alle Felder ausfuellen.')
+      return
     }
+    dispatch(loginUser({ username: username.trim(), password }))
   }
 
   const displayError = localError || error
@@ -41,8 +36,6 @@ export default function LoginPage() {
       backgroundImage: 'radial-gradient(ellipse at 20% 50%, rgba(124,106,247,0.06) 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, rgba(78,203,148,0.04) 0%, transparent 50%)',
     }}>
       <Box sx={{ width: '100%', maxWidth: 400 }}>
-
-        {/* Logo */}
         <Stack alignItems="center" spacing={1.5} sx={{ mb: 4 }}>
           <Box sx={{
             width: 52, height: 52, borderRadius: 3,
@@ -62,24 +55,13 @@ export default function LoginPage() {
           </Box>
         </Stack>
 
-        {/* Card */}
         <Box sx={{
           bgcolor: '#18181c', border: '1px solid #2e2e38',
           borderRadius: 3, p: 3,
         }}>
-          <Tabs
-            value={tab}
-            onChange={(_, v) => { setTab(v); setLocalError(''); dispatch(clearError()) }}
-            sx={{
-              mb: 3, minHeight: 36,
-              '& .MuiTab-root': { minHeight: 36, textTransform: 'none', fontSize: '0.875rem', color: '#7c7b8a', fontFamily: '"DM Sans", sans-serif' },
-              '& .Mui-selected': { color: '#f0eff5 !important' },
-              '& .MuiTabs-indicator': { bgcolor: '#7c6af7', height: 2, borderRadius: 1 },
-            }}
-          >
-            <Tab label="Anmelden" />
-            <Tab label="Registrieren" />
-          </Tabs>
+          <Typography variant="body2" sx={{ color: '#7c7b8a', mb: 3 }}>
+            Login nur mit hinterlegten Zugangsdaten.
+          </Typography>
 
           <Stack spacing={2}>
             <TextField
@@ -100,22 +82,9 @@ export default function LoginPage() {
               onKeyDown={e => e.key === 'Enter' && handleSubmit()}
               size="small"
               fullWidth
-              autoComplete={tab === 0 ? 'current-password' : 'new-password'}
+              autoComplete="current-password"
               sx={inputSx}
             />
-            {tab === 1 && (
-              <TextField
-                label="Passwort bestätigen"
-                type="password"
-                value={confirm}
-                onChange={e => setConfirm(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleSubmit()}
-                size="small"
-                fullWidth
-                autoComplete="new-password"
-                sx={inputSx}
-              />
-            )}
 
             {displayError && (
               <Alert severity="error" sx={{ py: 0.5, fontSize: '0.8rem', bgcolor: alpha('#e25c5c', 0.1), color: '#f4a0a0', border: '1px solid', borderColor: alpha('#e25c5c', 0.3), '& .MuiAlert-icon': { color: '#e25c5c' } }}>
@@ -137,14 +106,14 @@ export default function LoginPage() {
             >
               {loading
                 ? <CircularProgress size={18} sx={{ color: '#fff' }} />
-                : tab === 0 ? 'Anmelden' : 'Konto erstellen'
+                : 'Anmelden'
               }
             </Button>
           </Stack>
         </Box>
 
         <Typography variant="caption" sx={{ color: '#7c7b8a', display: 'block', textAlign: 'center', mt: 2 }}>
-          Daten werden lokal in deinem Browser gespeichert.
+          Daten werden lokal in deinem Browser geprueft.
         </Typography>
       </Box>
     </Box>

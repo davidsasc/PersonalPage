@@ -1,12 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
-import { get, set } from 'idb-keyval'
 
 export type View = 'login' | 'dashboard' | 'studienplaner'
-
-interface User {
-  username: string
-  passwordHash: string
-}
 
 interface AuthState {
   isLoggedIn: boolean
@@ -32,31 +26,28 @@ async function hashPassword(password: string): Promise<string> {
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
 }
 
+const ENV_USERNAME = process.env.NEXT_PUBLIC_APP_USERNAME ?? ''
+const ENV_PASSWORD = process.env.NEXT_PUBLIC_APP_PASSWORD ?? ''
+
 export const loginUser = createAsyncThunk(
   'auth/login',
   async ({ username, password }: { username: string; password: string }, { rejectWithValue }) => {
-    const hash = await hashPassword(password)
-    const stored: User | undefined = await get(`user:${username.toLowerCase()}`)
-    if (!stored) {
-      return rejectWithValue('Benutzer nicht gefunden.')
+    if (!ENV_USERNAME || !ENV_PASSWORD) {
+      return rejectWithValue('Login ist nicht konfiguriert.')
     }
-    if (stored.passwordHash !== hash) {
+
+    const normalizedUsername = username.trim().toLowerCase()
+    if (normalizedUsername !== ENV_USERNAME.trim().toLowerCase()) {
+      return rejectWithValue('Ungueltiger Benutzername.')
+    }
+
+    const passwordHash = await hashPassword(password)
+    const envPasswordHash = await hashPassword(ENV_PASSWORD)
+    if (passwordHash !== envPasswordHash) {
       return rejectWithValue('Falsches Passwort.')
     }
-    return username
-  }
-)
 
-export const registerUser = createAsyncThunk(
-  'auth/register',
-  async ({ username, password }: { username: string; password: string }, { rejectWithValue }) => {
-    if (username.trim().length < 3) return rejectWithValue('Benutzername muss mindestens 3 Zeichen haben.')
-    if (password.length < 6) return rejectWithValue('Passwort muss mindestens 6 Zeichen haben.')
-    const existing: User | undefined = await get(`user:${username.toLowerCase()}`)
-    if (existing) return rejectWithValue('Benutzername bereits vergeben.')
-    const hash = await hashPassword(password)
-    await set(`user:${username.toLowerCase()}`, { username, passwordHash: hash } as User)
-    return username
+    return ENV_USERNAME
   }
 )
 
@@ -79,7 +70,10 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(loginUser.pending, (state) => { state.loading = true; state.error = null })
+      .addCase(loginUser.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false
         state.isLoggedIn = true
@@ -87,17 +81,6 @@ const authSlice = createSlice({
         state.currentView = 'dashboard'
       })
       .addCase(loginUser.rejected, (state, action) => {
-        state.loading = false
-        state.error = action.payload as string
-      })
-      .addCase(registerUser.pending, (state) => { state.loading = true; state.error = null })
-      .addCase(registerUser.fulfilled, (state, action) => {
-        state.loading = false
-        state.isLoggedIn = true
-        state.username = action.payload
-        state.currentView = 'dashboard'
-      })
-      .addCase(registerUser.rejected, (state, action) => {
         state.loading = false
         state.error = action.payload as string
       })

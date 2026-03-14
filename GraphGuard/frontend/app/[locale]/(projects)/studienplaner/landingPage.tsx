@@ -63,9 +63,9 @@ const CAT: Record<CatKey, { label: string; color: string; min: number; max: numb
   pf: { label: 'Pflichtbereich',                color: '#5b8dee', min: 114, max: 114, range: '114' },
   wf: { label: 'Wahlpflichtbereich',            color: '#9b78e8', min: 10,  max: 35,  range: '10–35' },
   iw: { label: 'Informatik-Wahlbereich',        color: '#4ecb94', min: 5,   max: 30,  range: '5–30' },
-  sg: { label: 'Studium Generale',              color: '#e8a94b', min: 5,   max: 6,   range: '5–6' },
+  sg: { label: 'Studium-Generale',              color: '#e8a94b', min: 5,   max: 6,   range: '5–6' },
   ab: { label: 'Abschlussarbeit',               color: '#e8709a', min: 12,  max: 12,  range: '12' },
-  sb: { label: 'Studienbegleitende Leistungen', color: '#5ecec9', min: 9,   max: 18,  range: '9–18' },
+  sb: { label: 'Studienbegleitende-Leistungen', color: '#5ecec9', min: 9,   max: 18,  range: '9–18' },
 }
 
 type FilterKey = 'all' | 'open' | 'done' | CatKey
@@ -172,11 +172,11 @@ export default function StudienplanerPage() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+      <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', bgcolor: 'background.default' }}>
 
         {/* Header */}
         <Box sx={{
-          px: { xs: 2, md: 4 }, py: 2,
+          px: { xs: 2, md: 4 }, py: 2, flexShrink: 0,
           borderBottom: '1px solid', borderColor: 'divider',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1.5,
         }}>
@@ -214,7 +214,7 @@ export default function StudienplanerPage() {
         </Box>
 
         {/* Summary */}
-        <Box sx={{ px: { xs: 2, md: 4 }, py: 2, borderBottom: '1px solid', borderColor: 'divider', display: 'flex', gap: 1.5, flexWrap: 'wrap' }}>
+        <Box sx={{ px: { xs: 2, md: 4 }, py: 2, flexShrink: 0, borderBottom: '1px solid', borderColor: 'divider', display: 'flex', gap: 1.5, flexWrap: 'wrap' }}>
           <MetricCard label="Erreichte CP" value={`${doneCp}`} sub={`von ${TOTAL_CP} CP`} color="#4ecb94" />
           <MetricCard label="Noch offen" value={`${TOTAL_CP - doneCp}`} sub={`${modules.filter(m => !m.done).length} Module`} />
           <MetricCard
@@ -232,10 +232,10 @@ export default function StudienplanerPage() {
         </Box>
 
         {/* Two-col layout */}
-        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '240px 1fr' }, minHeight: 'calc(100vh - 210px)' }}>
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '240px 1fr' }, flex: 1, minHeight: 0, overflow: 'hidden' }}>
 
           {/* Sidebar */}
-          <Box sx={{ borderRight: { md: '1px solid' }, borderBottom: { xs: '1px solid', md: 'none' }, borderColor: 'divider', p: 2, overflowY: 'auto' }}>
+          <Box sx={{ borderRight: { md: '1px solid' }, borderBottom: { xs: '1px solid', md: 'none' }, borderColor: 'divider', p: 2, minHeight: 0, overflowY: 'auto', height: '100%' }}>
             <Typography variant="caption" sx={{ color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', mb: 1 }}>
               Kategorien
             </Typography>
@@ -287,10 +287,10 @@ export default function StudienplanerPage() {
           </Box>
 
           {/* Right panel */}
-          <Box sx={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden', height: '100%' }}>
 
             {/* Add form */}
-            <Box sx={{ px: { xs: 2, md: 3 }, py: 1.5, borderBottom: '1px solid', borderColor: 'divider' }}>
+            <Box sx={{ px: { xs: 2, md: 3 }, py: 1.5, flexShrink: 0, borderBottom: '1px solid', borderColor: 'divider' }}>
               <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} flexWrap="wrap" useFlexGap>
                 <TextField
                   size="small" placeholder="Modulname …" value={newName}
@@ -338,7 +338,7 @@ export default function StudienplanerPage() {
             </Box>
 
             {/* Filter chips */}
-            <Box sx={{ px: { xs: 2, md: 3 }, py: 1, borderBottom: '1px solid', borderColor: 'divider', display: 'flex', gap: 0.75, flexWrap: 'wrap', alignItems: 'center' }}>
+            <Box sx={{ px: { xs: 2, md: 3 }, py: 1, flexShrink: 0, borderBottom: '1px solid', borderColor: 'divider', display: 'flex', gap: 0.75, flexWrap: 'wrap', alignItems: 'center' }}>
               <FilterListIcon sx={{ fontSize: 15, color: 'text.secondary', mr: 0.5 }} />
               {FILTERS.map(f => (
                 <Chip
@@ -357,7 +357,7 @@ export default function StudienplanerPage() {
             </Box>
 
             {/* Module list */}
-            <Box sx={{ flex: 1, overflowY: 'auto', px: { xs: 2, md: 3 }, pb: 4 }}>
+            <Box sx={{ flex: 1, minHeight: 0, overflowY: 'auto', px: { xs: 2, md: 3 }, pb: 4 }}>
               {semKeys.length === 0 ? (
                 <Typography variant="body2" sx={{ color: 'text.secondary', textAlign: 'center', py: 6, fontFamily: '"DM Mono", monospace' }}>
                   Keine Module gefunden.
