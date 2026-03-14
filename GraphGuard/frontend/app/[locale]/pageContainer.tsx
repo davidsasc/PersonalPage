@@ -1,6 +1,17 @@
 'use client'
-import LandingPage from "./(LandingPage)/landingPage";
+import { useAppSelector } from './store/hooks'
+import LoginPage from './(auth)/loginPage'
+import DashboardPage from './(dashboard)/dashboardPage'
+import StudienplanerPage from './(projects)/studienplaner/landingPage'
 
 export default function PageContainer() {
-  return (<LandingPage></LandingPage>);
+  const { isLoggedIn, currentView } = useAppSelector(s => s.auth)
+
+  if (!isLoggedIn) return <LoginPage />
+
+  switch (currentView) {
+    case 'studienplaner': return <StudienplanerPage />
+    case 'dashboard':
+    default:             return <DashboardPage />
+  }
 }

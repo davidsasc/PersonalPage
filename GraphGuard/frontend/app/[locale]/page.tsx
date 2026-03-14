@@ -1,9 +1,10 @@
+import StoreProvider from './store/StoreProvider'
 import PageContainer from './pageContainer'
 
-export const metadata = {
-  title: 'David Schwab',
-}
-
-export default function LandingPage() {
-  return <PageContainer />
+export default function Page() {
+  return (
+    <StoreProvider>
+      <PageContainer />
+    </StoreProvider>
+  )
 }
