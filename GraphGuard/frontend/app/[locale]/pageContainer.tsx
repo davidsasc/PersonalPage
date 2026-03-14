@@ -1,5 +1,6 @@
 'use client'
+import LandingPage from "./(LandingPage)/landingPage";
 
 export default function PageContainer() {
-  return ("");
+  return (<LandingPage></LandingPage>);
 }
