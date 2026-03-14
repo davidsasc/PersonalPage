@@ -1,0 +1,6 @@
+services:
+  nxtstart:
+    build: .
+    env_file: "prod.env"
+    ports:
+      - 3000:3000
